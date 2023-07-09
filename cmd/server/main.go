@@ -1,26 +1,20 @@
 package main
 
 import (
-	"github.com/Rus-Iva/metriccollector/internal/server"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
 )
 
+const (
+	gauge   MetricType = "gauge"
+	counter MetricType = "counter"
+)
+
 func main() {
-	s := server.NewServer()
+	//ms := NewMemStorage()
+	mux := http.NewServeMux()
+	mux.HandleFunc(`/update/`, catchMetricHandler)
 
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-
-	r.Route("/", func(r chi.Router) {
-		r.Get("/", s.GetAllMetricsHandler)
-		r.Post("/update/{metricType}/{metricName}/{metricValue}", s.PostMetricHandler)
-		r.Get("/value/{metricType}/{metricName}", s.GetMetricValueHandler)
-	})
-
-	err := http.ListenAndServe(`:8080`, r)
+	err := http.ListenAndServe(`:8080`, mux)
 	if err != nil {
 		panic(err)
 	}
