@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Rus-Iva/metriccollector/internal/agent"
 	"os"
 	"os/signal"
 	"syscall"

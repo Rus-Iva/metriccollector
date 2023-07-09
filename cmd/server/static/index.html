@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <title>All metrics</title>
+    </head>
+    <body>
+    <table>
+        <thead>
+        <tr>
+            <th colspan="2">Gauge</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range .Gauge}}
+        <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Value}}</td>
+        </tr>
+        {{end}}
+        <thead>
+        <tr>
+            <th colspan="2">Counter</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range .Counter}}
+        <tr>
+            <td>{{.Name}}</td>
+            <td>{{.Value}}</td>
+        </tr>
+        {{end}}
+        </tbody>
+    </table>
+    </body>
+</html>
