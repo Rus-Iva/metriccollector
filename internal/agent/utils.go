@@ -50,16 +50,14 @@ func (c *HTTPClient) sendMetrics() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(fmt.Sprintf("key: %s, value: %s, resp status %d", k, v, resp.StatusCode()))
+		fmt.Printf("key: %s, value: %s, resp status %d\n", k, v, resp.StatusCode())
 	}
 	for k, v := range c.storage.GetCounter() {
-		fmt.Println(fmt.Sprintf("key: %s, value: %s\n", k, v))
 		resp, err := c.sendMetricHandler("counter", k, v.String())
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(fmt.Sprintf("key: %s, value: %s, resp status %d", k, v, resp.StatusCode()))
-
+		fmt.Printf("key: %s, value: %s, resp status %d\n", k, v, resp.StatusCode())
 	}
 }
 

@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -31,7 +30,7 @@ func (ms *MemStorage) ReadGaugeValue(metricName string) (Gauge, error) {
 	if ok {
 		return val, nil
 	}
-	return val, errors.New(fmt.Sprintf("%s: metric name doesnt exist", metricName))
+	return val, fmt.Errorf("%s: metric name doesnt exist", metricName)
 }
 
 func (ms *MemStorage) GetCounter() CounterMetrics {
@@ -56,7 +55,7 @@ func (ms *MemStorage) ReadCounterValue(metricName string) (Counter, error) {
 	if ok {
 		return val, nil
 	}
-	return val, errors.New(fmt.Sprintf("%s: metric name doesnt exist", metricName))
+	return val, fmt.Errorf("%s: metric name doesnt exist", metricName)
 }
 
 func NewMemData() *MemData {
