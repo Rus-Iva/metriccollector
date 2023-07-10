@@ -61,7 +61,7 @@ func (c *HTTPClient) sendMetrics() {
 	}
 }
 
-func (c *HTTPClient) CollectMetrics() {
+func (c *HTTPClient) CollectMetrics(pollInterval, reportInterval time.Duration) {
 	pollTicker := time.NewTicker(pollInterval)
 	reportTicker := time.NewTicker(reportInterval)
 

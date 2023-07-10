@@ -14,3 +14,12 @@ test_3:
                 -source-path=. \
                 -agent-binary-path=cmd/agent/agent \
                 -binary-path=cmd/server/server
+test_4:
+	SERVER_PORT=9999
+	  ADDRESS="localhost:$${SERVER_PORT}"
+	  TEMP_FILE=tmpfile
+	  metricstest -test.v -test.run=^TestIteration4$ \
+		-agent-binary-path=cmd/agent/agent \
+		-binary-path=cmd/server/server \
+		-server-port=$SERVER_PORT \
+		-source-path=.
