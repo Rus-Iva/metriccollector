@@ -5,15 +5,15 @@ import (
 )
 
 var flagBseEndpointAddr string
-var flagReportInterval int
-var flagPollInterval int
+var flagReportInterval int64
+var flagPollInterval int64
 
 // parseFlags обрабатывает аргументы командной строки
 // и сохраняет их значения в соответствующих переменных
 func parseFlags() {
-	flag.StringVarP(&flagBseEndpointAddr, "", "a", ":8080", "address and port to run agent")
-	flag.IntVarP(&flagReportInterval, "repint", "r", 10, "metrics report interval")
-	flag.IntVarP(&flagPollInterval, "polint", "p", 2, "metrics poll interval")
+	flag.StringVarP(&flagBseEndpointAddr, "addr", "a", "localhost:8080", "address and port to run agent")
+	flag.Int64VarP(&flagReportInterval, "repint", "r", 10, "metrics report interval")
+	flag.Int64VarP(&flagPollInterval, "polint", "p", 2, "metrics poll interval")
 	// парсим переданные серверу аргументы в зарегистрированные переменные
 	flag.Parse()
 }

@@ -17,7 +17,7 @@ func main() {
 	signal.Notify(shutdownCh, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
-		c.CollectMetrics(time.Duration(flagPollInterval), time.Duration(flagReportInterval))
+		c.CollectMetrics(time.Duration(flagReportInterval)*time.Second, time.Duration(flagReportInterval)*time.Second)
 	}()
 
 	<-shutdownCh
