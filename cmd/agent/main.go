@@ -11,7 +11,7 @@ import (
 func main() {
 	parseFlags()
 
-	c := agent.NewClient(flagBseEndpointAddr)
+	c := agent.NewClient(flagBaseEndpointAddr)
 
 	var shutdownCh = make(chan os.Signal, 1)
 	signal.Notify(shutdownCh, syscall.SIGINT, syscall.SIGTERM)
