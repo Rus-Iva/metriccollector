@@ -5,6 +5,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -13,7 +14,8 @@ func main() {
 	s := server.NewServer()
 
 	r := chi.NewRouter()
-	r.Use(middleware.Logger)
+	r.Use(s.LoggerMiddleware)
+	r.Use(middleware.Timeout(60 * time.Second))
 	r.Use(middleware.Recoverer)
 
 	r.Route("/", func(r chi.Router) {
