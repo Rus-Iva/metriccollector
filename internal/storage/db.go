@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"sync"
 )
 
 type MemData struct {
@@ -10,6 +11,7 @@ type MemData struct {
 }
 
 type MemStorage struct {
+	sync.RWMutex
 	data *MemData
 }
 
@@ -22,10 +24,14 @@ func (ms *MemStorage) SetGauge(gm GaugeMetrics) {
 }
 
 func (ms *MemStorage) WriteGaugeValue(metricName string, metricVal Gauge) {
+	ms.Lock()
+	defer ms.Unlock()
 	ms.data.Gauge[metricName] = metricVal
 }
 
 func (ms *MemStorage) ReadGaugeValue(metricName string) (Gauge, error) {
+	ms.RLock()
+	defer ms.RUnlock()
 	val, ok := ms.data.Gauge[metricName]
 	if ok {
 		return val, nil
@@ -42,6 +48,8 @@ func (ms *MemStorage) IncrementCounterValue(metricName string) {
 }
 
 func (ms *MemStorage) WriteCounterValue(metricName string, metricVal Counter) {
+	ms.Lock()
+	defer ms.Unlock()
 	if currVal, ok := ms.data.Counter[metricName]; ok {
 		newVal := currVal + metricVal
 		ms.data.Counter[metricName] = newVal
@@ -51,6 +59,8 @@ func (ms *MemStorage) WriteCounterValue(metricName string, metricVal Counter) {
 }
 
 func (ms *MemStorage) ReadCounterValue(metricName string) (Counter, error) {
+	ms.RLock()
+	defer ms.RUnlock()
 	val, ok := ms.data.Counter[metricName]
 	if ok {
 		return val, nil
