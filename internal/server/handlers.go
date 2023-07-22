@@ -5,7 +5,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"html/template"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -30,9 +29,7 @@ func (s *Server) PostMetricHandler(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "incorrect type of metric value", http.StatusBadRequest)
 			return
 		}
-		s.Lock()
 		s.storage.WriteGaugeValue(metricName, storage.Gauge(metricValParsed))
-		s.Unlock()
 		rw.WriteHeader(http.StatusOK)
 		return
 
@@ -43,9 +40,7 @@ func (s *Server) PostMetricHandler(rw http.ResponseWriter, r *http.Request) {
 			http.Error(rw, "incorrect type of metric value", http.StatusBadRequest)
 			return
 		}
-		s.Lock()
 		s.storage.WriteCounterValue(metricName, storage.Counter(metricValParsed))
-		s.Unlock()
 		rw.WriteHeader(http.StatusOK)
 		return
 	}
@@ -78,12 +73,7 @@ func (s *Server) GetMetricValueHandler(rw http.ResponseWriter, r *http.Request) 
 func (s *Server) GetAllMetricsHandler(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-
-	exPath := filepath.Dir(ex)
+	exPath := filepath.Dir(s.executablePath)
 	t := template.Must(template.ParseFiles(filepath.Join(exPath, "static/index.html")))
 	context := Context{}
 	gaugeMetrics := s.storage.GetGauge()
