@@ -36,3 +36,9 @@ test_5:
 	-binary-path=cmd/server/server \
 	-server-port=${SERVER_PORT} \
 	-source-path=.
+test_6:
+	metricstest -test.v -test.run=^TestIteration6$$ \
+	-agent-binary-path=cmd/agent/agent \
+	-binary-path=cmd/server/server \
+	-server-port=${SERVER_PORT} \
+	-source-path=.
