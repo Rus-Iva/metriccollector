@@ -1,15 +1,11 @@
 package agent
 
 import (
+	"fmt"
 	"github.com/Rus-Iva/metriccollector/internal/storage"
 	"github.com/go-resty/resty/v2"
 	"runtime"
 	"time"
-)
-
-const (
-	pollInterval   = 2 * time.Second
-	reportInterval = 10 * time.Second
 )
 
 type HTTPClient struct {
@@ -18,9 +14,9 @@ type HTTPClient struct {
 	myMemStats runtime.MemStats
 }
 
-func NewClient() *HTTPClient {
+func NewClient(baseEndpoint string) *HTTPClient {
 	client := resty.New()
-	client.SetBaseURL("http://localhost:8080")
+	client.SetBaseURL(fmt.Sprintf("http://%s", baseEndpoint))
 	client.SetHeader("Content-Type", "text/plain")
 	client.SetTimeout(1 * time.Second)
 	s := storage.NewMemStorage()

@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	parseFlags()
+
 	s := server.NewServer()
 
 	r := chi.NewRouter()
@@ -19,8 +21,7 @@ func main() {
 		r.Post("/update/{metricType}/{metricName}/{metricValue}", s.PostMetricHandler)
 		r.Get("/value/{metricType}/{metricName}", s.GetMetricValueHandler)
 	})
-
-	err := http.ListenAndServe(`:8080`, r)
+	err := http.ListenAndServe(flagRunAddr, r)
 	if err != nil {
 		panic(err)
 	}
