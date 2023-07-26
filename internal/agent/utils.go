@@ -9,36 +9,36 @@ import (
 )
 
 func (c *HTTPClient) pollMetrics() {
-	runtime.ReadMemStats(&c.myMemStats)
+	runtime.ReadMemStats(c.myMemStats)
 	gm := storage.GaugeMetrics{
-		"Alloc":         storage.Gauge(c.myMemStats.Alloc),
-		"BuckHashSys":   storage.Gauge(c.myMemStats.BuckHashSys),
-		"Frees":         storage.Gauge(c.myMemStats.Frees),
-		"GCCPUFraction": storage.Gauge(c.myMemStats.GCCPUFraction),
-		"GCSys":         storage.Gauge(c.myMemStats.GCSys),
-		"HeapAlloc":     storage.Gauge(c.myMemStats.HeapAlloc),
-		"HeapIdle":      storage.Gauge(c.myMemStats.HeapIdle),
-		"HeapInuse":     storage.Gauge(c.myMemStats.HeapInuse),
-		"HeapObjects":   storage.Gauge(c.myMemStats.HeapObjects),
-		"HeapReleased":  storage.Gauge(c.myMemStats.HeapReleased),
-		"HeapSys":       storage.Gauge(c.myMemStats.HeapSys),
-		"LastGC":        storage.Gauge(c.myMemStats.LastGC),
-		"Lookups":       storage.Gauge(c.myMemStats.Lookups),
-		"MCacheInuse":   storage.Gauge(c.myMemStats.MCacheInuse),
-		"MCacheSys":     storage.Gauge(c.myMemStats.MCacheSys),
-		"MSpanInuse":    storage.Gauge(c.myMemStats.MSpanInuse),
-		"MSpanSys":      storage.Gauge(c.myMemStats.MSpanSys),
-		"Mallocs":       storage.Gauge(c.myMemStats.Mallocs),
-		"NextGC":        storage.Gauge(c.myMemStats.NextGC),
-		"NumForcedGC":   storage.Gauge(c.myMemStats.NumForcedGC),
-		"NumGC":         storage.Gauge(c.myMemStats.NumGC),
-		"OtherSys":      storage.Gauge(c.myMemStats.OtherSys),
-		"PauseTotalNs":  storage.Gauge(c.myMemStats.PauseTotalNs),
-		"StackInuse":    storage.Gauge(c.myMemStats.StackInuse),
-		"StackSys":      storage.Gauge(c.myMemStats.StackSys),
-		"Sys":           storage.Gauge(c.myMemStats.Sys),
-		"TotalAlloc":    storage.Gauge(c.myMemStats.TotalAlloc),
-		"RandomValue":   storage.Gauge(rand.Int()),
+		"Alloc":         float64(c.myMemStats.Alloc),
+		"BuckHashSys":   float64(c.myMemStats.BuckHashSys),
+		"Frees":         float64(c.myMemStats.Frees),
+		"GCCPUFraction": c.myMemStats.GCCPUFraction,
+		"GCSys":         float64(c.myMemStats.GCSys),
+		"HeapAlloc":     float64(c.myMemStats.HeapAlloc),
+		"HeapIdle":      float64(c.myMemStats.HeapIdle),
+		"HeapInuse":     float64(c.myMemStats.HeapInuse),
+		"HeapObjects":   float64(c.myMemStats.HeapObjects),
+		"HeapReleased":  float64(c.myMemStats.HeapReleased),
+		"HeapSys":       float64(c.myMemStats.HeapSys),
+		"LastGC":        float64(c.myMemStats.LastGC),
+		"Lookups":       float64(c.myMemStats.Lookups),
+		"MCacheInuse":   float64(c.myMemStats.MCacheInuse),
+		"MCacheSys":     float64(c.myMemStats.MCacheSys),
+		"MSpanInuse":    float64(c.myMemStats.MSpanInuse),
+		"MSpanSys":      float64(c.myMemStats.MSpanSys),
+		"Mallocs":       float64(c.myMemStats.Mallocs),
+		"NextGC":        float64(c.myMemStats.NextGC),
+		"NumForcedGC":   float64(c.myMemStats.NumForcedGC),
+		"NumGC":         float64(c.myMemStats.NumGC),
+		"OtherSys":      float64(c.myMemStats.OtherSys),
+		"PauseTotalNs":  float64(c.myMemStats.PauseTotalNs),
+		"StackInuse":    float64(c.myMemStats.StackInuse),
+		"StackSys":      float64(c.myMemStats.StackSys),
+		"Sys":           float64(c.myMemStats.Sys),
+		"TotalAlloc":    float64(c.myMemStats.TotalAlloc),
+		"RandomValue":   float64(rand.Int()),
 	}
 	c.storage.SetGauge(gm)
 	c.storage.IncrementCounterValue("PollCount")
@@ -46,18 +46,20 @@ func (c *HTTPClient) pollMetrics() {
 
 func (c *HTTPClient) sendMetrics() {
 	for k, v := range c.storage.GetGauge() {
-		resp, err := c.sendMetricHandler("gauge", k, v.String())
+		//resp, err := c.sendMetricHandler("gauge", k, storage.GaugeString(v))
+		resp, err := c.sendJSONMetricHandler("gauge", k, v)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("key: %s, value: %s, resp status %d\n", k, v, resp.StatusCode())
+		fmt.Printf("key: %s, value: %.2f, resp status %d\n", k, v, resp.StatusCode())
 	}
 	for k, v := range c.storage.GetCounter() {
-		resp, err := c.sendMetricHandler("counter", k, v.String())
+		//resp, err := c.sendMetricHandler("counter", k, storage.CounterString(v))
+		resp, err := c.sendJSONMetricHandler("counter", k, v)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("key: %s, value: %s, resp status %d\n", k, v, resp.StatusCode())
+		fmt.Printf("key: %s, value: %d, resp status %d\n", k, v, resp.StatusCode())
 	}
 }
 

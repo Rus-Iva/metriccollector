@@ -23,15 +23,15 @@ func (ms *MemStorage) SetGauge(gm GaugeMetrics) {
 	ms.data.Gauge = gm
 }
 
-func (ms *MemStorage) WriteGaugeValue(metricName string, metricVal Gauge) {
-	ms.Lock()
-	defer ms.Unlock()
+func (ms *MemStorage) WriteGaugeValue(metricName string, metricVal float64) {
+	//ms.Lock()
+	//defer ms.Unlock()
 	ms.data.Gauge[metricName] = metricVal
 }
 
-func (ms *MemStorage) ReadGaugeValue(metricName string) (Gauge, error) {
-	ms.RLock()
-	defer ms.RUnlock()
+func (ms *MemStorage) ReadGaugeValue(metricName string) (float64, error) {
+	//ms.RLock()
+	//defer ms.RUnlock()
 	val, ok := ms.data.Gauge[metricName]
 	if ok {
 		return val, nil
@@ -47,20 +47,21 @@ func (ms *MemStorage) IncrementCounterValue(metricName string) {
 	ms.data.Counter[metricName] = ms.data.Counter[metricName] + 1
 }
 
-func (ms *MemStorage) WriteCounterValue(metricName string, metricVal Counter) {
-	ms.Lock()
-	defer ms.Unlock()
+func (ms *MemStorage) WriteCounterValue(metricName string, metricVal int64) int64 {
+	//ms.Lock()
+	//defer ms.Unlock()
 	if currVal, ok := ms.data.Counter[metricName]; ok {
 		newVal := currVal + metricVal
 		ms.data.Counter[metricName] = newVal
-		return
+		return newVal
 	}
 	ms.data.Counter[metricName] = metricVal
+	return metricVal
 }
 
-func (ms *MemStorage) ReadCounterValue(metricName string) (Counter, error) {
-	ms.RLock()
-	defer ms.RUnlock()
+func (ms *MemStorage) ReadCounterValue(metricName string) (int64, error) {
+	//ms.RLock()
+	//defer ms.RUnlock()
 	val, ok := ms.data.Counter[metricName]
 	if ok {
 		return val, nil

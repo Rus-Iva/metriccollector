@@ -11,7 +11,7 @@ import (
 type HTTPClient struct {
 	*resty.Client
 	storage    *storage.MemStorage
-	myMemStats runtime.MemStats
+	myMemStats *runtime.MemStats
 }
 
 func NewClient(baseEndpoint string) *HTTPClient {
@@ -22,5 +22,5 @@ func NewClient(baseEndpoint string) *HTTPClient {
 	s := storage.NewMemStorage()
 
 	var m runtime.MemStats
-	return &HTTPClient{client, s, m}
+	return &HTTPClient{client, s, &m}
 }

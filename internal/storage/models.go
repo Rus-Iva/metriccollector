@@ -1,19 +1,18 @@
 package storage
 
-import "strconv"
+import (
+	"strconv"
+)
 
-type Gauge float64
-type Counter int64
+type GaugeMetrics map[string]float64
+type CounterMetrics map[string]int64
 
-type GaugeMetrics map[string]Gauge
-type CounterMetrics map[string]Counter
-
-func (g Gauge) String() string {
-	return strconv.FormatFloat(float64(g), 'f', -1, 64)
+func GaugeString(g float64) string {
+	return strconv.FormatFloat(g, 'f', -1, 64)
 }
 
-func (c Counter) String() string {
-	return strconv.FormatInt(int64(c), 10)
+func CounterString(c int64) string {
+	return strconv.FormatInt(c, 10)
 }
 
 func NewGaugeMetrics() GaugeMetrics {
