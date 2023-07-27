@@ -1,7 +1,6 @@
 package agent
 
 import (
-	"fmt"
 	"github.com/Rus-Iva/metriccollector/internal/storage"
 	"math/rand"
 	"runtime"
@@ -46,18 +45,20 @@ func (c *HTTPClient) pollMetrics() {
 
 func (c *HTTPClient) sendMetrics() {
 	for k, v := range c.storage.GetGauge() {
-		resp, err := c.sendMetricHandler("gauge", k, v.String())
+		//resp, err := c.sendMetricHandler("gauge", k, v.String())
+		resp, err := c.sendMetricJSONHandler("gauge", k, v)
 		if err != nil {
-			panic(err)
+			c.Logger.Error().Err(err)
 		}
-		fmt.Printf("key: %s, value: %s, resp status %d\n", k, v, resp.StatusCode())
+		c.Logger.Info().Str("key", k).Str("value", v.String()).Int("status_code", resp.StatusCode())
 	}
 	for k, v := range c.storage.GetCounter() {
-		resp, err := c.sendMetricHandler("counter", k, v.String())
+		//resp, err := c.sendMetricHandler("counter", k, v.String())
+		resp, err := c.sendMetricJSONHandler("counter", k, v)
 		if err != nil {
-			panic(err)
+			c.Logger.Error().Err(err)
 		}
-		fmt.Printf("key: %s, value: %s, resp status %d\n", k, v, resp.StatusCode())
+		c.Logger.Info().Str("key", k).Str("value", v.String()).Int("status_code", resp.StatusCode())
 	}
 }
 

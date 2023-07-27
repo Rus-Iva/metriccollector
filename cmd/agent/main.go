@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Rus-Iva/metriccollector/internal/agent"
+	"github.com/go-resty/resty/v2"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,6 +13,12 @@ func main() {
 	parseFlags()
 
 	c := agent.NewClient(flagBaseEndpointAddr)
+	c.OnError(func(req *resty.Request, err error) {
+		if v, ok := err.(*resty.ResponseError); ok {
+			// Do something with v.Response
+			c.Logger.Error().Str("RESPONSE", v.Response.String())
+		}
+	})
 
 	var shutdownCh = make(chan os.Signal, 1)
 	signal.Notify(shutdownCh, syscall.SIGINT, syscall.SIGTERM)

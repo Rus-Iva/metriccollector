@@ -47,15 +47,16 @@ func (ms *MemStorage) IncrementCounterValue(metricName string) {
 	ms.data.Counter[metricName] = ms.data.Counter[metricName] + 1
 }
 
-func (ms *MemStorage) WriteCounterValue(metricName string, metricVal Counter) {
+func (ms *MemStorage) WriteCounterValue(metricName string, metricVal Counter) Counter {
 	ms.Lock()
 	defer ms.Unlock()
 	if currVal, ok := ms.data.Counter[metricName]; ok {
 		newVal := currVal + metricVal
 		ms.data.Counter[metricName] = newVal
-		return
+		return newVal
 	}
 	ms.data.Counter[metricName] = metricVal
+	return metricVal
 }
 
 func (ms *MemStorage) ReadCounterValue(metricName string) (Counter, error) {

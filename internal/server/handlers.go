@@ -1,6 +1,9 @@
 package server
 
 import (
+	"bytes"
+	"encoding/json"
+	"github.com/Rus-Iva/metriccollector/internal/dto"
 	"github.com/Rus-Iva/metriccollector/internal/storage"
 	"github.com/go-chi/chi/v5"
 	"html/template"
@@ -47,6 +50,84 @@ func (s *Server) PostMetricHandler(rw http.ResponseWriter, r *http.Request) {
 
 	http.Error(rw, "incorrect metric type", http.StatusBadRequest)
 
+}
+
+func (s *Server) PostUpdateJSONMetricHandler(rw http.ResponseWriter, r *http.Request) {
+	var m dto.Metrics
+	var buf bytes.Buffer
+	// читаем тело запроса
+	_, err := buf.ReadFrom(r.Body)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err := json.Unmarshal(buf.Bytes(), &m); err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	respMetrics := dto.Metrics{
+		ID:    m.ID,
+		MType: m.MType,
+	}
+	if m.MType == "gauge" {
+		s.storage.WriteGaugeValue(m.ID, *m.Value)
+		respMetrics.Value = m.Value
+	} else if m.MType == "counter" {
+		updatedVal := s.storage.WriteCounterValue(m.ID, *m.Delta)
+		respMetrics.Delta = &updatedVal
+	}
+
+	resp, err := json.Marshal(respMetrics)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(resp)
+}
+
+func (s *Server) PostValueJSONMetricHandler(rw http.ResponseWriter, r *http.Request) {
+	var m dto.Metrics
+	var buf bytes.Buffer
+	// читаем тело запроса
+	_, err := buf.ReadFrom(r.Body)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if err := json.Unmarshal(buf.Bytes(), &m); err != nil {
+		http.Error(rw, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	respMetrics := dto.Metrics{
+		ID:    m.ID,
+		MType: m.MType,
+	}
+	if m.MType == "gauge" {
+		val, err := s.storage.ReadGaugeValue(m.ID)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusNotFound)
+			return
+		}
+		respMetrics.Value = &val
+	} else if m.MType == "counter" {
+		val, err := s.storage.ReadCounterValue(m.ID)
+		if err != nil {
+			http.Error(rw, err.Error(), http.StatusNotFound)
+			return
+		}
+		respMetrics.Delta = &val
+	}
+
+	resp, err := json.Marshal(respMetrics)
+	if err != nil {
+		http.Error(rw, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(resp)
 }
 
 func (s *Server) GetMetricValueHandler(rw http.ResponseWriter, r *http.Request) {
