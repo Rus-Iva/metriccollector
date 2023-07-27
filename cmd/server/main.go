@@ -22,6 +22,8 @@ func main() {
 		r.Get("/", s.GetAllMetricsHandler)
 		r.Post("/update/{metricType}/{metricName}/{metricValue}", s.PostMetricHandler)
 		r.Get("/value/{metricType}/{metricName}", s.GetMetricValueHandler)
+		r.Post("/update/", s.PostUpdateJSONMetricHandler)
+		r.Post("/value/", s.PostValueJSONMetricHandler)
 	})
 	err := http.ListenAndServe(flagRunAddr, r)
 	if err != nil {
